@@ -9,6 +9,7 @@ import { Repository } from 'typeorm'
 
 import { CreateProductDto } from './dto/create-product.dto'
 import { UpdateProductDto } from './dto/update-product.dto'
+import { PaginationDto } from 'src/common/dtos/pagination.dto'
 
 import { Product } from './entities/product.entity'
 
@@ -33,8 +34,13 @@ export class ProductsService {
   }
 
   // Paginar
-  findAll() {
-    return this.productRepository.find({})
+  findAll(paginationDto: PaginationDto) {
+    const { limit = 10, offset = 0 } = paginationDto
+    return this.productRepository.find({
+      take: limit,
+      skip: offset,
+      //TODO: Relaciones entre tablas
+    })
   }
 
   async findOne(id: string) {
