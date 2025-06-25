@@ -12,6 +12,7 @@ export class ProductImage {
   @ManyToOne(
     () => Product,
     (product) => product.images, // relación inversa
+    { onDelete: 'CASCADE' },
   )
   product: Product
 }

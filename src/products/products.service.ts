@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common'
@@ -135,6 +136,18 @@ export class ProductsService {
   private handleDBExceptions(error: any) {
     if (error.code === '23505') throw new BadRequestException(error.detail)
     this.logger.error(error)
-    throw new Error('Unexpected error, check server logs')
+    throw new InternalServerErrorException(
+      'Unexpected error, check server logs',
+    )
+  }
+
+  async deleteAllProducts() {
+    const query = this.productRepository.createQueryBuilder('product')
+
+    try {
+      return await query.delete().where({}).execute()
+    } catch (error) {
+      this.handleDBExceptions(error)
+    }
   }
 }
