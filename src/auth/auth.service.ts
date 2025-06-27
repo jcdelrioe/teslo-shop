@@ -27,7 +27,7 @@ export class AuthService {
       })
 
       await this.userRepository.save(user)
-      delete user.password // Remove password from the response for security reasons
+      user.password = '' // Remove password from the response for security reasons
 
       return user
       //TODO: Return el JWT de acceso

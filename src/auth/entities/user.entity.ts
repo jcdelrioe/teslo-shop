@@ -11,7 +11,7 @@ export class User {
   @Column('text', {
     select: false,
   })
-  password?: string
+  password: string
 
   @Column('text')
   fullName: string
