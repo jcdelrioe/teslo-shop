@@ -8,14 +8,31 @@ import {
 import { MessageWsService } from './message-ws.service'
 import { Server, Socket } from 'socket.io'
 import { NewMessageDto } from './dtos/new-message.dto'
+import { JwtService } from '@nestjs/jwt'
+import { JwtPayload } from '../auth/interfaces'
 
 @WebSocketGateway({ cors: true })
 export class MessageWsGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer() wss: Server
-  constructor(private readonly messageWsService: MessageWsService) {}
+  constructor(
+    private readonly messageWsService: MessageWsService,
+    private readonly jwtService: JwtService,
+  ) {}
   handleConnection(client: Socket) {
+    const token = client.handshake.headers.authentication as string
+
+    let payload: JwtPayload
+
+    try {
+      payload = this.jwtService.verify(token)
+    } catch (error) {
+      client.disconnect()
+      return
+    }
+    console.log({ payload })
+
     // console.log('Cliente conectado: ', client.id)
     this.messageWsService.registerClient(client)
 
@@ -47,7 +64,7 @@ export class MessageWsGateway
     // })
     //!Emite a todos
     this.wss.emit('message-from-server', {
-      fullName: 'Soy Yo JCDRE!!!',
+      fullName: 'Soy Yo!!!',
       message: payload.message || 'no-message',
     })
   }
